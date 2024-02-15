@@ -4,14 +4,19 @@ using UnityEngine;
 public class MinuteScript : MonoBehaviour
 {
     [SerializeField] Transform center;
-    Transform OriginPosition;
+    Vector3 OriginPosition;
     bool ClockType = true;
     int LastMinute = 0;
+    private void Awake()
+    {
+        ClockScript.ChangeClockType += ChangeType;
+
+    }
     void Start()
     {
         center = transform.parent.transform;
 
-        OriginPosition = transform;
+        OriginPosition = transform.position;
         SmoothTimeSet();
 
     }
@@ -42,8 +47,8 @@ public class MinuteScript : MonoBehaviour
     }
     void SmoothTimeSet()
     {
-        transform.position = OriginPosition.position;
-        transform.rotation = OriginPosition.rotation;
+        transform.position = OriginPosition;
+        transform.rotation = Quaternion.identity;
         var time = System.DateTime.Now;
         float angle = 360 * (time.Second + time.Minute * 60) / 3600;
         transform.RotateAround(center.position, Vector3.forward, angle);
@@ -51,10 +56,11 @@ public class MinuteScript : MonoBehaviour
 
     void OnPointTimeSet()
     {
-        transform.position = OriginPosition.position;
-        transform.rotation = OriginPosition.rotation;
+        transform.position = OriginPosition;
+        transform.rotation = Quaternion.identity;
         var time = System.DateTime.Now;
         float angle = time.Minute * 360 / 60;
+        print(time.Minute + " " + angle + " " + transform.position);
         transform.RotateAround(center.position, Vector3.forward, angle);
     }
     public void WaitAndMove()

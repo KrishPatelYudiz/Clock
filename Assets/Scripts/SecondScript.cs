@@ -8,7 +8,7 @@ public class SecondScript : MonoBehaviour
     Vector3 OriginPosition;
     bool ClockType = true;
     int LastSecond = 0;
-    private void OnEnable()
+    private void Awake()
     {
         ClockScript.ChangeClockType += ChangeType;
 
@@ -45,14 +45,12 @@ public class SecondScript : MonoBehaviour
 
         var time = System.DateTime.Now;
         float angle = 360 * time.Second / 60;
-        print(time.Second + " " + angle);
         transform.RotateAround(center.position, Vector3.forward, angle);
     }
 
     public void WaitAndMove()
     {
-        print(System.DateTime.Now.Millisecond);
-        if (System.DateTime.Now.Second != LastSecond)
+        if (System.DateTime.Now.Second == LastSecond)
         {
 
             float angle = 360 / 60;
@@ -67,8 +65,5 @@ public class SecondScript : MonoBehaviour
     {
         float angle = Time.deltaTime * 360 / 60;
         transform.RotateAround(center.position, Vector3.forward, angle);
-        print("SmoothMove");
-
-
     }
 }

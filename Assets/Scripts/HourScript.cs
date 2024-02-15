@@ -4,16 +4,20 @@ using UnityEngine;
 public class HourScript : MonoBehaviour
 {
     [SerializeField] Transform center;
-    Transform OriginPosition;
+    Vector3 OriginPosition;
     bool ClockType = true;
     int LastMinute = 0;
 
+    private void Awake()
+    {
+        ClockScript.ChangeClockType += ChangeType;
 
+    }
     void Start()
     {
         center = transform.parent.transform;
 
-        OriginPosition = transform;
+        OriginPosition = transform.position;
         SmoothTimeSet();
 
     }
@@ -44,8 +48,8 @@ public class HourScript : MonoBehaviour
     }
     void SmoothTimeSet()
     {
-        transform.position = OriginPosition.position;
-        transform.rotation = OriginPosition.rotation;
+        transform.position = OriginPosition;
+        transform.rotation = Quaternion.identity;
         var time = System.DateTime.Now;
         float angle = 360 * (time.Second + (time.Minute * 60) + ((time.Hour > 12 ? time.Hour - 12 : time.Hour) * 3600)) / 43200;
 
@@ -54,11 +58,11 @@ public class HourScript : MonoBehaviour
 
     void OnPointTimeSet()
     {
-        transform.position = OriginPosition.position;
-        transform.rotation = OriginPosition.rotation;
+        transform.position = OriginPosition;
+        transform.rotation = Quaternion.identity;
         var time = System.DateTime.Now;
         float angle = 360 * (((int)(time.Minute / 12)) + ((time.Hour > 12 ? time.Hour - 12 : time.Hour) * 5)) / 60;
-
+        print(angle);
         transform.RotateAround(center.position, Vector3.forward, angle);
     }
 
@@ -69,6 +73,7 @@ public class HourScript : MonoBehaviour
         if (System.DateTime.Now.Minute % 12 == 0 && System.DateTime.Now.Minute != LastMinute)
         {
             LastMinute++;
+            LastMinute %= 60;
             float angle = 360 / 60;
             transform.RotateAround(center.position, Vector3.forward, angle);
         }
