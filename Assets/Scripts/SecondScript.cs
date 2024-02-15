@@ -18,6 +18,7 @@ public class SecondScript : MonoBehaviour
         center = transform.parent.transform;
 
         OriginPosition = transform.position;
+        SmoothTimeSet();
     }
     private void Update()
     {

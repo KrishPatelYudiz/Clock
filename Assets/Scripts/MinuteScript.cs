@@ -60,7 +60,6 @@ public class MinuteScript : MonoBehaviour
         transform.rotation = Quaternion.identity;
         var time = System.DateTime.Now;
         float angle = time.Minute * 360 / 60;
-        print(time.Minute + " " + angle + " " + transform.position);
         transform.RotateAround(center.position, Vector3.forward, angle);
     }
     public void WaitAndMove()
