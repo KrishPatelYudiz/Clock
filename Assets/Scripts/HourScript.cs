@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class HourScript : MonoBehaviour
@@ -6,7 +7,8 @@ public class HourScript : MonoBehaviour
     [SerializeField] Transform center;
     Vector3 OriginPosition;
     bool ClockType = true;
-    int LastMinute = 0;
+    Coroutine smoothMove;
+    Coroutine waitAndMove;
 
     private void Awake()
     {
@@ -19,32 +21,23 @@ public class HourScript : MonoBehaviour
 
         OriginPosition = transform.position;
         SmoothTimeSet();
-
-    }
-    private void Update()
-    {
-        if (ClockType)
-        {
-            SmoothMove();
-        }
-        else
-        {
-            WaitAndMove();
-        }
+        smoothMove = StartCoroutine(SmoothMove());
     }
     void ChangeType(object v, EventArgs e)
     {
         ClockType = !ClockType;
-        SmoothTimeSet();
         if (ClockType)
         {
             SmoothTimeSet();
+            StopCoroutine(waitAndMove);
+            smoothMove = StartCoroutine(SmoothMove());
         }
         else
         {
             OnPointTimeSet();
+            StopCoroutine(smoothMove);
+            waitAndMove = StartCoroutine(WaitAndMove());
         }
-        LastMinute = System.DateTime.Now.Minute;
     }
     void SmoothTimeSet()
     {
@@ -62,26 +55,30 @@ public class HourScript : MonoBehaviour
         transform.rotation = Quaternion.identity;
         var time = System.DateTime.Now;
         float angle = 360 * (((int)(time.Minute / 12)) + ((time.Hour > 12 ? time.Hour - 12 : time.Hour) * 5)) / 60;
-        print(angle);
         transform.RotateAround(center.position, Vector3.forward, angle);
     }
 
 
 
-    public void WaitAndMove()
+    IEnumerator WaitAndMove()
     {
-        if (System.DateTime.Now.Minute % 12 == 0 && System.DateTime.Now.Minute != LastMinute)
+        if (System.DateTime.Now.Minute % 12 == 0)
         {
-            LastMinute++;
-            LastMinute %= 60;
             float angle = 360 / 60;
             transform.RotateAround(center.position, Vector3.forward, angle);
+            yield return new WaitForSecondsRealtime(12 * 60);
         }
+        yield return null;
+
 
     }
-    public void SmoothMove()
+    IEnumerator SmoothMove()
     {
-        float angle = Time.deltaTime * 360 / 3600;
-        transform.RotateAround(center.position, Vector3.forward, angle);
+        while (true)
+        {
+            float angle = Time.deltaTime * 360 / 3600;
+            transform.RotateAround(center.position, Vector3.forward, angle);
+            yield return null;
+        }
     }
 }
